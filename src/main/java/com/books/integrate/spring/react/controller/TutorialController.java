@@ -97,6 +97,45 @@ public class TutorialController {
 		}
 	}
 
+	@DeleteMapping(path = "/delete{title}")
+	public ResponseEntity<HttpStatus> deleteTotorialByTitle(@RequestParam(value = "title") String title){
+		try {
+			List<Tutorial> tutorials = this.tutorialRepository.findByTitleContaining(title);
+			Tutorial tutorialDelete = tutorials.get(0);
+			tutorialRepository.delete(tutorialDelete);
+			return new ResponseEntity<>(HttpStatus.OK);
+		}catch (Exception e){
+			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+		}
+	}
+
+	@PutMapping("/update{title}")
+	public ResponseEntity<Tutorial> updateTutorialByTitle(@PathVariable("title") String title, @RequestBody Tutorial tutorial){
+		List<Tutorial> tutorials = this.tutorialRepository.findByTitleContaining(title);
+		if(tutorials.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		Tutorial tutorialUpdate = tutorials.get(0);
+		tutorialUpdate.setTitle(tutorial.getTitle());
+		tutorialUpdate.setDescription(tutorial.getDescription());
+		tutorialUpdate.setPrice(tutorial.getPrice());
+
+		return new ResponseEntity<>(tutorialRepository.save(tutorialUpdate), HttpStatus.OK);
+
+	}
+
+	@GetMapping(path = "/tutorials/price{price}")
+	public ResponseEntity<List<Tutorial>> findByPrice(double price){
+		try {
+			List<Tutorial> tutorialsPrice = tutorialRepository.findByPrice(price);
+			if(tutorialsPrice.isEmpty())
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(tutorialsPrice, HttpStatus.OK);
+		}catch (Exception e){
+			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+		}
+	}
+
 	@DeleteMapping("/tutorials")
 	public ResponseEntity<HttpStatus> deleteAllTutorials() {
 		try {
@@ -113,9 +152,9 @@ public class TutorialController {
 		try {
 			List<Tutorial> tutorials = tutorialRepository.findByPublished(true);
 
-			if (tutorials.isEmpty()) {
+			if (tutorials.isEmpty())
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			}
+
 			return new ResponseEntity<>(tutorials, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);

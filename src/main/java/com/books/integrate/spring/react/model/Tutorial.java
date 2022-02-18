@@ -19,6 +19,9 @@ public class Tutorial {
 	@Column(name = "published")
 	private boolean published;
 
+    @Column(name = "price")
+    private double price;
+
 	public Tutorial() {
 
 	}
@@ -58,6 +61,14 @@ public class Tutorial {
 
 		this.published = isPublished;
 	}
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
 
 	@Override
 	public String toString() {
